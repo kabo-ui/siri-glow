@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="manifest" href="manifest.json">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Siri Edge Glow</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    overflow: hidden;
+  }
+  canvas {
+    width: 100vw;
+    height: 100vh;
+    display: block;
+  }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<script>
+const canvas = document.getElementById("c");
+const ctx = canvas.getContext("2d");
+
+function resize() {
+  canvas.width = innerWidth;
+  canvas.height = innerHeight;
+}
+resize();
+addEventListener("resize", resize);
+
+let t = 0;
+
+function roundedRect(x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const flow = t * 0.35;          // FASTER colour travel
+  const breathe = Math.sin(t * 0.8) * 1.2;
+  const radius = 70 + breathe;
+
+  // Locked Siri colours — ALL visible
+  const colors = [
+    [0, 140, 255],   // blue
+    [120, 80, 255],  // purple
+    [255, 80, 200],  // pink
+    [255, 180, 90],  // gold
+    [255, 90, 60]    // orange
+  ];
+
+  // Circular gradient motion so nothing disappears
+  const grad = ctx.createLinearGradient(
+    canvas.width * (0.5 + 0.5 * Math.cos(flow)),
+    canvas.height * (0.5 + 0.5 * Math.sin(flow)),
+    canvas.width * (0.5 + 0.5 * Math.cos(flow + Math.PI)),
+    canvas.height * (0.5 + 0.5 * Math.sin(flow + Math.PI))
+  );
+
+  colors.forEach((c, i) => {
+    grad.addColorStop(i / (colors.length - 1), `rgb(${c[0]},${c[1]},${c[2]})`);
+  });
+
+  // INWARD DISSOLVING GLOW — slightly thinner
+  const layers = 20;
+  for (let i = layers; i > 0; i--) {
+    const p = i / layers;
+
+    ctx.strokeStyle = grad;
+    ctx.globalAlpha = Math.pow(p, 1.7) * 0.45;
+    ctx.lineWidth = p * 22; // thinner than before
+
+    roundedRect(
+      (layers - i) * 1.6,
+      (layers - i) * 1.6,
+      canvas.width - (layers - i) * 3.2,
+      canvas.height - (layers - i) * 3.2,
+      radius - (layers - i) * 1.1
+    );
+
+    ctx.stroke();
+  }
+
+  ctx.globalAlpha = 1;
+  t += 0.02; // smoother but alive
+  requestAnimationFrame(draw);
+}
+
+draw();
+</script>
+</body>
+</html>
