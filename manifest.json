@@ -1,22 +1,11 @@
 {
-  "name": "Siri Edge Glow",
-  "short_name": "Siri Glow",
-  "description": "Liquid edge glow animation inspired by Siri",
-  "start_url": "./index.html",
+  "background_color": "#ffffff",
+  "dir": "ltr",
   "display": "standalone",
-  "background_color": "transparent",
-  "theme_color": "transparent",
+  "name": "kabo-ui.github",
   "orientation": "any",
-  "icons": [
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ]
+  "scope": "/",
+  "short_name": "kabo-ui.github",
+  "start_url": "/",
+  "theme_color": "#ffffff"
 }
